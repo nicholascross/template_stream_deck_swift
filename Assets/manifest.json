@@ -1,0 +1,36 @@
+{
+  "Actions": [
+    {
+      "Icon": "images/ActionIcon",
+      "Name": "<PLUGIN_NAME>Action",
+      "SupportedInMultiActions": false,
+      "Tooltip": "<PLUGIN_NAME>",
+      "UUID": "<PLUGIN_BUNDLE_IDENTIFIER>.action",
+      "States": [
+        {
+          "Image": "images/Icon",
+          "TitleAlignment": "middle", 
+          "FontSize": "16"
+        }
+      ]
+    }
+  ],
+  "SDKVersion": 2,
+  "Author": "Nicholas Cross",
+  "CodePath": "<PLUGIN_NAME>Plugin",
+  "Description": "Custom plugin",
+  "Name": "<PLUGIN_NAME>",
+  "Icon": "images/PluginIcon",
+  "URL": "https://github.com/nicholascross/streamdeck",
+  "Version": "1.1",
+  "OS": [
+    {
+        "Platform": "mac",
+        "MinimumVersion" : "10.14"
+    }
+  ],
+  "Software":
+    {
+        "MinimumVersion" : "4.3"
+    }
+}

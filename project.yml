@@ -1,0 +1,26 @@
+name: <PLUGIN_NAME>
+packages:
+  Starscream:
+    url: https://github.com/daltoniam/Starscream
+    from: 4.0.4
+targets:
+  <PLUGIN_NAME>Plugin:
+    type: tool
+    platform: macOS
+    deploymentTarget: "10.15"
+    sources: [Plugin]
+    dependencies:
+      - target: StreamDeckKit
+      - package: Starscream
+    postCompileScripts:
+      - script: rm -rf $BUILT_PRODUCTS_DIR/<PLUGIN_BUNDLE_IDENTIFIER>.streamDeckPlugin
+        name: Clean plugin package
+      - script: cp -f $BUILT_PRODUCTS_DIR/<PLUGIN_NAME>Plugin $PROJECT_DIR/<PLUGIN_BUNDLE_IDENTIFIER>.sdPlugin/<PLUGIN_NAME>Plugin
+        name: Prepare plugin binary
+      - script: $PROJECT_DIR/Vendor/DistributionTool -b -i $PROJECT_DIR/<PLUGIN_BUNDLE_IDENTIFIER>.sdPlugin/ -o $BUILT_PRODUCTS_DIR
+        name: Package plugin
+  StreamDeckKit:
+    type: library.static
+    platform: macOS
+    deploymentTarget: "10.15"
+    sources: [StreamDeckKit]
