@@ -24,12 +24,13 @@ public final class Plugin: StreamDeckConnectionDelegate {
         
     }
     
-    public func didReceiveSettings(_: [String : Any], action: String, context: String, device: String) {
+    public func didReceiveSettings(_ settings: [String : Any], action: String, context: String, device: String) {
+        logDebug("didReceiveSettings: \(settings)")
         
     }
     
-    public func didReceiveGlobalSettings(_: [String : Any]) {
-        
+    public func didReceiveGlobalSettings(_ settings: [String : Any]) {
+        logDebug("didReceiveGlobalSettings: \(settings)")
     }
     
     public func keyDown(_: (row: Int, column: Int), isInMultiAction: Bool, action: String, context: String, device: String) {
@@ -47,23 +48,25 @@ public final class Plugin: StreamDeckConnectionDelegate {
     }
     
     public func propertyInspectorDidAppear(action: String, context: String, device: String) {
+        logDebug("Property inspector did appear")
         
+        connection.getSettings(context: context)
     }
     
     public func propertyInspectorDidDisappear(action: String, context: String, device: String) {
-        
+        logDebug("Property inspector did disappear")
     }
     
     public func willAppear(_: (row: Int, column: Int), isInMultiAction: Bool, settings: [String : Any], action: String, context: String, device: String) {
-        
+        logDebug("will appear: \(action)")
     }
     
     public func willDisappear(_: (row: Int, column: Int), isInMultiAction: Bool, settings: [String : Any], action: String, context: String, device: String) {
-        
+        logDebug("will disappear: \(action)")
     }
     
-    public func receivedPayloadFromPropertyInspector(_: [String : Any], action: String, context: String) {
-        
+    public func receivedPayloadFromPropertyInspector(_ payload: [String : Any], action: String, context: String) {
+        logDebug("received payload: \(payload)")
     }
     
     public func didChangeButtonTitle(_: ButtonTitle, coordinates: (Int, Int), state: Int, settings: [String : Any], action: String, context: String, device: String) {
