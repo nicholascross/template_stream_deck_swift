@@ -111,7 +111,10 @@ public final class StreamDeckConnection {
                 context: context,
                 payload: payload,
                 action: action
-        ).jsonData else { return }
+        ).jsonData else {
+            logError("Failed to serialise action: \(payload)")
+            return
+        }
         
         webSocketClient?.write(stringData: data) {}
     }
@@ -238,7 +241,10 @@ extension StreamDeckConnection: WebSocketDelegate {
     }
     
     func handleEvent(data: Data) {
-        guard let eventType = eventType(data: data) else { return }
+        guard let eventType = eventType(data: data) else {
+            logError("unknown event type: \(String(data: data, encoding: .utf8) ?? "")")
+            return
+        }
 
         switch eventType {
         case .applicationDidLaunch:
