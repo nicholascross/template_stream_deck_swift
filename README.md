@@ -22,6 +22,10 @@ After entering a plugin name and bundle id a new plugin project will be generate
 
 `Plugin.swift` can then be modified to handle key presses and other events.
 
+## Example
+
+The linked [iOS simulator plugin](https://github.com/nicholascross/StreamDeckSimulator) was created using this template.
+
 ## Contribution
 
 This project is still experimental and not fully utilised or tested by myself so I would encourage you to submit any fixes you make back here.
