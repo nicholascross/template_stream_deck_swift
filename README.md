@@ -10,6 +10,8 @@ git clone git@github.com:nicholascross/template_stream_deck_swift.git
 
 Update `projgen.sh` so the `DEFAULT_PROJECTS_PATH` points to the location where you want the plugin project generated.
 
+Install [XcodeGen](https://github.com/yonaskolb/XcodeGen) if not already available.
+
 ## How to use
 
 ```bash
