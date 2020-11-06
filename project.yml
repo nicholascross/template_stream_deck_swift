@@ -24,3 +24,5 @@ targets:
     platform: macOS
     deploymentTarget: "10.15"
     sources: [StreamDeckKit]
+    dependencies:
+      - package: Starscream
