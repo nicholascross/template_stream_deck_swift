@@ -10,5 +10,5 @@ struct SetImagePayload: Encodable {
     */
     let image: String
     let target: TargetType
-    let state: String
+    let state: Int?
 }

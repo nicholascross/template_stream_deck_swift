@@ -1,5 +1,5 @@
 import Foundation
 
 struct SetStatePayload: Encodable {
-    let state: String
+    let state: Int
 }

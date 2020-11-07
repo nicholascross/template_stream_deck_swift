@@ -50,7 +50,7 @@ public final class StreamDeckConnection {
         webSocketClient?.write(stringData: data) {}
     }
     
-    public func setImage(_ base64Image: String, context: String, target: TargetType, state: String) {
+    public func setImage(_ base64Image: String, context: String, target: TargetType, state: Int? = nil) {
         guard let data = StreamDeckAction<SetImagePayload>(
                 event: .setImage,
                 context: context,
@@ -61,7 +61,7 @@ public final class StreamDeckConnection {
         webSocketClient?.write(stringData: data) {}
     }
     
-    public func setState(_ state: String, context: String) {
+    public func setState(_ state: Int, context: String) {
         guard let data = StreamDeckAction<SetStatePayload>(
                 event: .setState,
                 context: context,
