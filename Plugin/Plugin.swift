@@ -4,6 +4,8 @@ import StreamDeckKit
 public final class Plugin: StreamDeckConnectionDelegate {
     private let connection: StreamDeckConnection
     
+    private var loadedSettings: [String: Settings] = [:]
+    
     init(connection: StreamDeckConnection) {
         self.connection = connection
     }
@@ -27,6 +29,10 @@ public final class Plugin: StreamDeckConnectionDelegate {
     public func didReceiveSettings(_ settings: [String : Any], action: String, context: String, device: String) {
         logDebug("didReceiveSettings: \(settings)")
         
+        if let settings = try? JSONDecoder().decode(Settings.self, from: JSONSerialization.data(withJSONObject: settings, options: .prettyPrinted)) {
+            loadedSettings[context] = settings
+            connection.setTitle("\(settings.count)", context: context, target: .both, state: 0)
+        }
     }
     
     public func didReceiveGlobalSettings(_ settings: [String : Any]) {
@@ -35,12 +41,14 @@ public final class Plugin: StreamDeckConnectionDelegate {
     
     public func keyDown(_: (row: Int, column: Int), isInMultiAction: Bool, action: String, context: String, device: String) {
         logDebug("Key down")
-        connection.setTitle("Down", context: context, target: .both, state: 0)
+        
+        let settings = settingsForContext(context)
+        updateSettingsForContext(context, count: settings.count + 1)
     }
     
     public func keyUp(_: (row: Int, column: Int), isInMultiAction: Bool, action: String, context: String, device: String) {
         logDebug("Key up")
-        connection.setTitle("Up", context: context, target: .both, state: 0)
+        connection.setTitle("\(settingsForContext(context).count)", context: context, target: .both, state: 0)
     }
     
     public func didWakeUp() {
@@ -59,6 +67,7 @@ public final class Plugin: StreamDeckConnectionDelegate {
     
     public func willAppear(_: (row: Int, column: Int), isInMultiAction: Bool, settings: [String : Any], action: String, context: String, device: String) {
         logDebug("will appear: \(action)")
+        connection.getSettings(context: context)
     }
     
     public func willDisappear(_: (row: Int, column: Int), isInMultiAction: Bool, settings: [String : Any], action: String, context: String, device: String) {
@@ -73,4 +82,17 @@ public final class Plugin: StreamDeckConnectionDelegate {
         
     }
 
+    private func settingsForContext(_ context: String) -> Settings {
+        return loadedSettings[context] ?? Settings(count: 0)
+    }
+    
+    private func updateSettingsForContext(_ context: String, count: Int) {
+        let settings = Settings(count: count)
+        loadedSettings[context] = settings
+        connection.setSettings(settings, context: context)
+    }
+}
+
+public struct Settings: Codable {
+    var count: Int
 }
