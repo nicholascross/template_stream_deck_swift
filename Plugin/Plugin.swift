@@ -1,13 +1,96 @@
 import Foundation
 import StreamDeckKit
+import CoreLocation
+import SwiftUI
 
 public final class Plugin: StreamDeckConnectionDelegate {
     private let connection: StreamDeckConnection
-    
-    private var loadedSettings: [String: Settings] = [:]
+    private let primaryAction: PrimaryAction
     
     init(connection: StreamDeckConnection) {
         self.connection = connection
+        self.primaryAction = PrimaryAction(connection: connection)
+    }
+
+    public func didReceiveSettings(_ settings: [String : Any], action: String, context: String, device: String) {
+        switch ActionType(rawValue: action) {
+        case .primary:
+            primaryAction.didReceiveSettings(settings, action: action, context: context, device: device)
+        default:
+            break
+        }
+    }
+    
+    public func keyDown(_ coordinates: (row: Int, column: Int), isInMultiAction: Bool, action: String, context: String, device: String) {
+        switch ActionType(rawValue: action) {
+        case .primary:
+            primaryAction.keyDown(coordinates, isInMultiAction: isInMultiAction, action: action, context: context, device: device)
+        default:
+            break
+        }
+    }
+    
+    public func keyUp(_ coordinates: (row: Int, column: Int), isInMultiAction: Bool, action: String, context: String, device: String) {
+        switch ActionType(rawValue: action) {
+        case .primary:
+            primaryAction.keyUp(coordinates, isInMultiAction: isInMultiAction, action: action, context: context, device: device)
+        default:
+            break
+        }
+    }
+    
+    public func propertyInspectorDidAppear(action: String, context: String, device: String) {
+        switch ActionType(rawValue: action) {
+        case .primary:
+            primaryAction.propertyInspectorDidAppear(action: action, context: context, device: device)
+        default:
+            break
+        }
+    }
+    
+    public func propertyInspectorDidDisappear(action: String, context: String, device: String) {
+        switch ActionType(rawValue: action) {
+        case .primary:
+            primaryAction.propertyInspectorDidDisappear(action: action, context: context, device: device)
+        default:
+            break
+        }
+    }
+    
+    public func willAppear(_ coordinates: (row: Int, column: Int), isInMultiAction: Bool, settings: [String : Any], action: String, context: String, device: String) {
+        switch ActionType(rawValue: action) {
+        case .primary:
+            primaryAction.willAppear(coordinates, isInMultiAction: isInMultiAction, settings: settings, action: action, context: context, device: device)
+        default:
+            break
+        }
+    }
+    
+    public func willDisappear(_ coordinates: (row: Int, column: Int), isInMultiAction: Bool, settings: [String : Any], action: String, context: String, device: String) {
+        switch ActionType(rawValue: action) {
+        case .primary:
+            primaryAction.willDisappear(coordinates, isInMultiAction: isInMultiAction, settings: settings, action: action, context: context, device: device)
+        default:
+            break
+        }
+    }
+    
+    public func receivedPayloadFromPropertyInspector(_ payload: [String : Any], action: String, context: String) {
+        switch ActionType(rawValue: action) {
+        case .primary:
+            primaryAction.receivedPayloadFromPropertyInspector(payload, action: action, context: context)
+        default:
+            break
+        }
+    }
+    
+    public func didChangeButtonTitle(_ title: ButtonTitle, coordinates: (Int, Int), state: Int, settings: [String : Any], action: String, context: String, device: String) {
+        switch ActionType(rawValue: action) {
+        case .primary:
+            primaryAction.didChangeButtonTitle(title, coordinates: coordinates, state: state, settings: settings, action: action, context: context, device: device)
+        default:
+            break
+        }
     }
     
     public func didLaunchApplication(_ application: String) {
@@ -26,73 +109,15 @@ public final class Plugin: StreamDeckConnectionDelegate {
         
     }
     
-    public func didReceiveSettings(_ settings: [String : Any], action: String, context: String, device: String) {
-        logDebug("didReceiveSettings: \(settings)")
-        
-        if let settings = try? JSONDecoder().decode(Settings.self, from: JSONSerialization.data(withJSONObject: settings, options: .prettyPrinted)) {
-            loadedSettings[context] = settings
-            connection.setTitle("\(settings.count)", context: context, target: .both, state: 0)
-        }
-    }
-    
     public func didReceiveGlobalSettings(_ settings: [String : Any]) {
-        logDebug("didReceiveGlobalSettings: \(settings)")
-    }
-    
-    public func keyDown(_: (row: Int, column: Int), isInMultiAction: Bool, action: String, context: String, device: String) {
-        logDebug("Key down")
-        
-        let settings = settingsForContext(context)
-        updateSettingsForContext(context, count: settings.count + 1)
-    }
-    
-    public func keyUp(_: (row: Int, column: Int), isInMultiAction: Bool, action: String, context: String, device: String) {
-        logDebug("Key up")
-        connection.setTitle("\(settingsForContext(context).count)", context: context, target: .both, state: 0)
+
     }
     
     public func didWakeUp() {
         
     }
-    
-    public func propertyInspectorDidAppear(action: String, context: String, device: String) {
-        logDebug("Property inspector did appear")
-        
-        connection.getSettings(context: context)
-    }
-    
-    public func propertyInspectorDidDisappear(action: String, context: String, device: String) {
-        logDebug("Property inspector did disappear")
-    }
-    
-    public func willAppear(_: (row: Int, column: Int), isInMultiAction: Bool, settings: [String : Any], action: String, context: String, device: String) {
-        logDebug("will appear: \(action)")
-        connection.getSettings(context: context)
-    }
-    
-    public func willDisappear(_: (row: Int, column: Int), isInMultiAction: Bool, settings: [String : Any], action: String, context: String, device: String) {
-        logDebug("will disappear: \(action)")
-    }
-    
-    public func receivedPayloadFromPropertyInspector(_ payload: [String : Any], action: String, context: String) {
-        logDebug("received payload: \(payload)")
-    }
-    
-    public func didChangeButtonTitle(_: ButtonTitle, coordinates: (Int, Int), state: Int, settings: [String : Any], action: String, context: String, device: String) {
-        
-    }
-
-    private func settingsForContext(_ context: String) -> Settings {
-        return loadedSettings[context] ?? Settings(count: 0)
-    }
-    
-    private func updateSettingsForContext(_ context: String, count: Int) {
-        let settings = Settings(count: count)
-        loadedSettings[context] = settings
-        connection.setSettings(settings, context: context)
-    }
 }
 
-public struct Settings: Codable {
-    var count: Int
+private enum ActionType: String, Decodable {
+    case primary = "<PLUGIN_BUNDLE_IDENTIFIER>.action"
 }
